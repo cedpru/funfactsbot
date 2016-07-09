@@ -1,4 +1,4 @@
-const ngrok = require('ngrok');
+//const ngrok = require('ngrok');
 const fs = require('fs');
 const restify = require('restify');
 const skype = require('skype-sdk');
@@ -26,10 +26,10 @@ botService.on('personalMessage', (bot, data) => {
     console.log('Message recu: ' + data.content);
 });
 
-ngrok.connect(8080, function (err, url) {});
-ngrok.once('connect', function (url) {
-    console.log('ngrok to : ' + url)
-});
+// ngrok.connect(8080, function (err, url) {});
+// ngrok.once('connect', function (url) {
+//     console.log('ngrok to : ' + url)
+// });
 const server = restify.createServer();
 server.post('/v1/chat', skype.messagingHandler(botService));
 const port = process.env.PORT || 8080;
