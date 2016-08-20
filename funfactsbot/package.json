@@ -1,0 +1,22 @@
+{
+  "name": "funfactbot",
+  "version": "1.0.0",
+  "main": "app.js",
+  "dependencies": {
+    "botbuilder": "^3.2.3",
+    "restify": "^4.1.1",
+    "mongodb": "^1.4.4",
+    "monk": "^1.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coderz4ever"
+  },
+  "description": ""
+}
