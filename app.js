@@ -1,8 +1,12 @@
 var restify = require('restify');
 var builder = require('botbuilder');
-var mongo = require('mongodb');
-var monk = require('monk');
-var db = monk('localhost:27017/facts');
+var express = require('express');
+var request = require('request');
+var cheerio = require('cheerio');
+var randomfact;
+//var mongo = require('mongodb');
+//var monk = require('monk');
+//var db = monk('localhost:27017/facts');
 
 //=========================================================
 // Bot Setup
@@ -67,8 +71,8 @@ bot.endConversationAction('goodbye', 'Goodbye (bye)', { matches: /^goodbye/i });
 
 bot.dialog('/', new builder.IntentDialog()
     .matches(/^!norris/i, function (session) {
-      var db = req.db;
-      session.send("one fact about Chuck incoming!");
+      getfact(session);
+      //session.send("one fact about Chuck incoming!");
     })
     .matches(/^!name/i, function (session) {
         session.send(session.userData.name);
@@ -96,6 +100,36 @@ bot.dialog('/', new builder.IntentDialog()
 function ping(session) {
   session.send('pong: ' + session.message.user.name);
   console.log('session ', session.message.user.name);
+}
+
+function getfact(session) {
+  var url = 'http://www.chucknorrisfacts.com/';
+  request(url, function(error, response, html) {
+    if (!error && response.statusCode == 200) {
+      var $ = cheerio.load(html);
+      last = $('.pager-last').children().attr('href').split('=')[1];
+      if (last > 0) {
+        var randompage = Math.floor(Math.random() * last) + 1;
+        var randomurl = 'http://www.chucknorrisfacts.com/all-chuck-norris-facts?page=' + randompage.toString();
+        var randomfactnumber = Math.floor(Math.random() * 13) + 1; 
+        request(randomurl, function(error2, response2, html2) {
+          if (!error2 && response2.statusCode == 200) {
+            var $ = cheerio.load(html2);
+            randomfact = $('.views-row-' + randomfactnumber).children().children().children().children().attr('href').split('=')[1];
+            if (randomfact != null) {
+              session.send(randomfact.toString());  
+            } 
+            else {
+              session.send('error, please retry');  
+            }  
+          }
+        });
+      }
+    } else {
+      console.log('error', error);
+    }
+
+  });
 }
 
 bot.dialog('/signin', [ 

@@ -5,8 +5,8 @@
   "dependencies": {
     "botbuilder": "^3.2.3",
     "restify": "^4.1.1",
-    "mongodb": "^1.4.4",
-    "monk": "^1.0.1"
+    "request"    : "latest",
+    "cheerio"    : "latest"
   },
   "devDependencies": {},
   "scripts": {
