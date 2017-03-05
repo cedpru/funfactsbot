@@ -1,8 +1,8 @@
 var restify = require('restify');
 var builder = require('botbuilder');
-var express = require('express');
 var request = require('request');
 var cheerio = require('cheerio');
+var fs = require('fs');
 var randomfact;
 //var mongo = require('mongodb');
 //var monk = require('monk');
@@ -13,8 +13,10 @@ var randomfact;
 //=========================================================
 
 // Setup Restify Server
-var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function() {
+var server = restify.createServer({certificate: fs.readFileSync('/home/cpruvost/funfactsbot/dev.emindtek.com.crt'),
+  key: fs.readFileSync('/home/cpruvost/funfactsbot/dev.emindtek.com.key')});
+//process.env.port || process.env.PORT || 
+server.listen(9443, function() {
   console.log('%s listening to %s', server.name, server.url);
 });
 
@@ -102,35 +104,57 @@ function ping(session) {
   console.log('session ', session.message.user.name);
 }
 
+// function getfact(session) {
+//   var url = 'http://www.chucknorrisfacts.com/';
+//   request(url, function(error, response, html) {
+//     if (!error && response.statusCode == 200) {
+//       var $ = cheerio.load(html);
+//       last = $('.pager-last').children().attr('href').split('=')[1];
+//       if (last > 0) {
+//         var randompage = Math.floor(Math.random() * last) + 1;
+//         var randomurl = 'http://www.chucknorrisfacts.com/all-chuck-norris-facts?page=' + randompage.toString();
+//         var randomfactnumber = Math.floor(Math.random() * 13) + 1; 
+//         request(randomurl, function(error2, response2, html2) {
+//           if (!error2 && response2.statusCode == 200) {
+//             var $ = cheerio.load(html2);
+//             randomfact = $('.views-row-' + randomfactnumber).children().children().children().children().attr('href').split('=')[1];
+//             if (randomfact != null) {
+//               session.send(randomfact.toString());  
+//             } 
+//             else {
+//               session.send('error, please retry');  
+//             }  
+//           }
+//         });
+//       }
+//     } else {
+//       console.log('error', error);
+//     }
+
+//   });
+// }
+
 function getfact(session) {
-  var url = 'http://www.chucknorrisfacts.com/';
+  var url = 'https://www.chucknorrisfacts.fr/facts/alea';
+  console.log(url);
   request(url, function(error, response, html) {
     if (!error && response.statusCode == 200) {
       var $ = cheerio.load(html);
-      last = $('.pager-last').children().attr('href').split('=')[1];
-      if (last > 0) {
-        var randompage = Math.floor(Math.random() * last) + 1;
-        var randomurl = 'http://www.chucknorrisfacts.com/all-chuck-norris-facts?page=' + randompage.toString();
-        var randomfactnumber = Math.floor(Math.random() * 13) + 1; 
-        request(randomurl, function(error2, response2, html2) {
-          if (!error2 && response2.statusCode == 200) {
-            var $ = cheerio.load(html2);
-            randomfact = $('.views-row-' + randomfactnumber).children().children().children().children().attr('href').split('=')[1];
-            if (randomfact != null) {
-              session.send(randomfact.toString());  
-            } 
-            else {
-              session.send('error, please retry');  
-            }  
-          }
-        });
+      var fact = (($('.factbody').first().text()).toString().split('Votez')[0]).trim();
+      if (fact != null && fact != '') {
+      	session.send(fact);  
+      } 
+      else {
+        session.send('error, please retry');  
       }
     } else {
       console.log('error', error);
     }
 
   });
+
 }
+
 
 bot.dialog('/signin', [ 
     function (session) { 
