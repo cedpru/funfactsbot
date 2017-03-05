@@ -4,9 +4,10 @@
   "main": "app.js",
   "dependencies": {
     "botbuilder": "^3.2.3",
-    "restify": "^4.1.1",
-    "request"    : "latest",
-    "cheerio"    : "latest"
+    "cheerio": "latest",
+    "fs": "0.0.1-security",
+    "request": "latest",
+    "restify": "^4.1.1"
   },
   "devDependencies": {},
   "scripts": {
